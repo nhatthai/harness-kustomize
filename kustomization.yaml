@@ -5,6 +5,6 @@ commonLabels:
   app: hello
 
 resources:
-- deployment.yml
-- service.yml
-- configMap.yml
+- deployment.yaml
+- service.yaml
+- configMap.yaml

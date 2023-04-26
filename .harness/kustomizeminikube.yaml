@@ -1,0 +1,49 @@
+pipeline:
+  name: kustomize-minikube
+  identifier: kustomizeminikube
+  projectIdentifier: akswebapi
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Deploy with Kustomize
+        identifier: Deploy_with_Kustomize
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: kustomizeservice
+          environment:
+            environmentRef: dev_1681976941706
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: MinikubeInfra
+          execution:
+            steps:
+              - step:
+                  name: Rollout Deployment
+                  identifier: rolloutDeployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+                    delegateSelectors:
+                      - helm-delegate
+                  failureStrategies: []
+            rollbackSteps:
+              - step:
+                  name: Rollback Rollout Deployment
+                  identifier: rollbackRolloutDeployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec:
+                    pruningEnabled: false
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
